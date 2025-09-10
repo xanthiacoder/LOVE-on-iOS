@@ -1,5 +1,5 @@
 function love.conf(t)
-    t.identity = "Screen Test iPad"      -- The name of the save directory (string)
+    t.identity = "Input Test iPad"       -- The name of the save directory (string)
     t.appendidentity = false             -- Search files in source directory before save directory (boolean)
     t.version = "12.0"                   -- The LÖVE version this game was made for (string)
     t.console = false                    -- Attach a console (boolean, Windows only)
@@ -8,7 +8,7 @@ function love.conf(t)
     t.audio.mic = false                 -- Request and use microphone capabilities in Android (boolean)
     t.audio.mixwithsystem = true        -- Keep background music playing when opening LOVE (boolean, iOS and Android only)
 
-    t.window.title = "Screen Test iPad" -- The window title (string)
+    t.window.title = "Input Test iPad"  -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
     t.window.width = 1024								-- { https://iosref.com/res (let's see what happens when fixed fullscreen)
     t.window.height = 768								-- { check table of resolutions for largest iPad logical size

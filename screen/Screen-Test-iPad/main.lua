@@ -1,8 +1,31 @@
--- for love 11.5
+-- for love 12.0
 -- on iphone (landscape), screen seems to be 830x368 (hard to touch corners x:30px y20px)
--- iphone landscape, camera island 60px, bottom swipe bar 40px 
+-- iphone landscape, camera island 60px, bottom swipe bar 40px
+-- iPad 10 Gen desktop: 1180 x 820, 147 chars wide (1176px) by 51 char height (816px)
+-- iPad safe area: 1024 x 768, 128 chars by 48 chars
+-- draw to a 1024 x 768 canvas, then draw the canvas centered on desktop
+-- need this for canvas - love.graphics.setBlendMode("alpha", "premultiplied")
 
 function love.load()
+
+	-- graphics
+	canvas = love.graphics.newCanvas(1024, 768) -- make a new canvas
+
+	-- constants
+	WIDTH_DESKTOP, HEIGHT_DESKTOP = love.window.getDesktopDimensions(1)
+	WIDTH_WINDOW, HEIGHT_WINDOW = love.graphics.getDimensions()
+	FONT_WIDTH = 8
+	FONT_HEIGHT = 16
+	if WIDTH_DESKTOP > 1024 then
+		SCREEN_OFFSETX = math.floor((WIDTH_DESKTOP-1024)/2)
+	else
+		SCREEN_OFFSETX = 0
+	end
+	if HEIGHT_DESKTOP > 768 then
+		SCREEN_OFFSETY = math.floor((HEIGHT_DESKTOP-768)/2)
+	else
+		SCREEN_OFFSETY = 0
+	end
 
 	-- flags
 	mouseDetected = false
@@ -18,9 +41,7 @@ function love.load()
 	holdToQuit = 0
 	
 	-- codepage 437, 8x16 px, 80x30 chars (640x480)
-	monoFont = love.graphics.newFont("Mx437_IBM_VGA_8x16.ttf", 16)
-	FONT_WIDTH = 8
-	FONT_HEIGHT = 16
+	monoFont = love.graphics.newFont("Mx437_IBM_VGA_8x16.ttf", FONT_HEIGHT)
 	love.graphics.setFont( monoFont )
 	print(monoFont:getWidth("█"))
 	print(monoFont:getHeight())
@@ -86,8 +107,8 @@ end
 function love.mousemoved( x, y, dx, dy, istouch )
 	-- mouse movement detected
 	mouseDetected = true
-	mouse.x = love.mouse.getX()
-	mouse.y = love.mouse.getY()
+	mouse.x = love.mouse.getX() - SCREEN_OFFSETX
+	mouse.y = love.mouse.getY() - SCREEN_OFFSETY
 end
 -- love.touchpressed( id, x, y, dx, dy, pressure )
 -- number pressure
@@ -104,7 +125,12 @@ end
 function love.draw()
 	-- set font before draw text
   love.graphics.setFont(monoFont)
-    
+
+	love.graphics.setCanvas(canvas) -- select the new canvas
+  love.graphics.clear(0, 0, 0, 0) -- clear the canvas
+	love.graphics.setColor(0,0,0,1) -- black color
+	love.graphics.rectangle("fill",0,0,1024,768) -- draw black background
+	love.graphics.setColor(1,1,1,1) -- white color    
   -- draw joysticks data
   love.graphics.print("--[ Joysticks ]--"..love.joystick.getJoystickCount(),FONT_WIDTH*0,FONT_HEIGHT*0)
 	if joystick ~= nil then -- not empty table, joystick(s) detected
@@ -133,6 +159,8 @@ function love.draw()
 		local touches = love.touch.getTouches()
     for i, id in ipairs(touches) do
       local x, y = love.touch.getPosition(id)
+      x = x - SCREEN_OFFSETX
+      y = y - SCREEN_OFFSETY
       love.graphics.circle("fill", x, y, 20)
 			love.graphics.print("Touch "..i.." x:"..math.floor(x).." y:"..math.floor(y),FONT_WIDTH*0,FONT_HEIGHT*(10+i))
     end	
@@ -149,14 +177,18 @@ function love.draw()
 	end
 	love.graphics.printf(keypressedHistory, FONT_WIDTH*40, FONT_HEIGHT*2, FONT_WIDTH*40, "left")
 
-	-- draw holdToQuit
-	-- love.graphics.print("holdToQuit :"..tostring(holdToQuit),FONT_WIDTH*35,FONT_HEIGHT*28)
-	width_desktop, height_desktop = love.window.getDesktopDimensions(1)
-	width_window, height_window = love.graphics.getDimensions()
-	love.graphics.print("desktop size : "..width_desktop.."x"..height_desktop,FONT_WIDTH*0,FONT_HEIGHT*26)
-	love.graphics.print("window size  : "..width_window.."x"..height_window,FONT_WIDTH*0,FONT_HEIGHT*27)
-  love.graphics.print("--[ hold anything to quit ]--",FONT_WIDTH*((80-30)/2),FONT_HEIGHT*28)
-	love.graphics.printf(holdToQuit,FONT_WIDTH*0,FONT_HEIGHT*29,FONT_WIDTH*80, "center")
+	love.graphics.print("desktop size : "..WIDTH_DESKTOP.."x"..HEIGHT_DESKTOP,FONT_WIDTH*0,FONT_HEIGHT*26)
+	love.graphics.print("window size  : "..WIDTH_WINDOW.."x"..HEIGHT_WINDOW,FONT_WIDTH*0,FONT_HEIGHT*27)
+  love.graphics.print("--[ hold anything to quit ]--",FONT_WIDTH*((128-30)/2),FONT_HEIGHT*46)
+	love.graphics.printf(holdToQuit,FONT_WIDTH*0,FONT_HEIGHT*47,FONT_WIDTH*128, "center")
+
+  -- settings for canvas
+  love.graphics.setCanvas() -- switch back to default screen canvas
+  love.graphics.setColor(0,0,0.5,1) -- dark blue
+  love.graphics.rectangle("fill",0,0,WIDTH_DESKTOP,HEIGHT_DESKTOP)
+--  love.graphics.setBlendMode("alpha", "premultiplied") -- needed for canvas
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(canvas, SCREEN_OFFSETX, SCREEN_OFFSETY)
 
 end
 
