@@ -133,59 +133,64 @@ function love.draw()
 	-- set font before draw text
   love.graphics.setFont(monoFont)
 
-	love.graphics.setCanvas(canvas) -- select the new canvas
+	love.graphics.setCanvas(canvas) -- select the 1024 x 768 canvas
   love.graphics.clear(0, 0, 0, 0) -- clear the canvas
 	love.graphics.setColor(0,0,0,1) -- black color
 	love.graphics.rectangle("fill",0,0,1024,768) -- draw black background
-	love.graphics.setColor(1,1,1,1) -- white color    
+	love.graphics.setColor(1,1,1,1) -- white color 
+	
+		-- draw screen rulers
+	love.graphics.print("0....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8....,....9....,....0....,....1....,....2....,....",0,0)
+	love.graphics.print("0\n.\n.\n.\n.\n-\n.\n.\n.\n.\n1\n.\n.\n.\n.\n-\n.\n.\n.\n.\n2\n.\n.\n.\n.\n-\n.\n.\n.\n.\n3\n.\n.\n.\n.\n-\n.\n.\n.\n.\n4\n.\n.\n.\n.\n-\n.\n.\n.\n.\n",0,0)
+	   
   -- draw joysticks data
-  love.graphics.print("--[ Joysticks ]--"..love.joystick.getJoystickCount(),FONT_WIDTH*0,FONT_HEIGHT*0)
+  love.graphics.print("--[ Joysticks ]--"..love.joystick.getJoystickCount(),FONT_WIDTH*1,FONT_HEIGHT*1)
 	if joystick ~= nil then -- not empty table, joystick(s) detected
 		for i = 1,#joystick do
-			love.graphics.print("Joystick "..i..": "..axisCount[i].." axes,"..buttonCount[i].." buttons, "..hatCount[i].." hats",FONT_WIDTH*0,FONT_HEIGHT*(i))
+			love.graphics.print("Joystick "..i..": "..axisCount[i].." axes,"..buttonCount[i].." buttons, "..hatCount[i].." hats",FONT_WIDTH*1,FONT_HEIGHT*(i+1))
 		end
 	else
-		love.graphics.print("No joystick detected",FONT_WIDTH*0,FONT_HEIGHT*1)
+		love.graphics.print("No joystick detected",FONT_WIDTH*1,FONT_HEIGHT*2)
   end  
 
 	-- draw mouse data
-  love.graphics.print("--[ Mouse ]--",FONT_WIDTH*0,FONT_HEIGHT*5)
+  love.graphics.print("--[ Mouse ]--",FONT_WIDTH*1,FONT_HEIGHT*6)
 	if mouseDetected then
-		love.graphics.print("Mouse detected, x:"..mouse.x.." y:"..mouse.y,FONT_WIDTH*0,FONT_HEIGHT*6)
+		love.graphics.print("Mouse detected, x:"..mouse.x.." y:"..mouse.y,FONT_WIDTH*1,FONT_HEIGHT*7)
 		if mouse.button > 0 then
-			love.graphics.print("Mouse button "..mouse.button.." pressed, "..mouse.clicks.." clicks",FONT_WIDTH*0,FONT_HEIGHT*7)		
+			love.graphics.print("Mouse button "..mouse.button.." pressed, "..mouse.clicks.." clicks",FONT_WIDTH*1,FONT_HEIGHT*8)		
 		end
 	else
-		love.graphics.print("No mouse detected",FONT_WIDTH*0,FONT_HEIGHT*6)
+		love.graphics.print("No mouse detected",FONT_WIDTH*1,FONT_HEIGHT*7)
 	end
 
 	-- draw touch data
-  love.graphics.print("--[ Touches ]--",FONT_WIDTH*0,FONT_HEIGHT*9)
+  love.graphics.print("--[ Touches ]--",FONT_WIDTH*1,FONT_HEIGHT*10)
 	if love.touch.getTouches() ~= nil then
-		love.graphics.print("#getTouches = "..#love.touch.getTouches(),FONT_WIDTH*0,FONT_HEIGHT*10)
+		love.graphics.print("#getTouches = "..#love.touch.getTouches(),FONT_WIDTH*1,FONT_HEIGHT*11)
 		local touches = love.touch.getTouches()
     for i, id in ipairs(touches) do
       local x, y = love.touch.getPosition(id)
       x = x - SCREEN_OFFSETX
       y = y - SCREEN_OFFSETY
       love.graphics.circle("fill", x, y, 20)
-			love.graphics.print("Touch "..i.." x:"..math.floor(x).." y:"..math.floor(y),FONT_WIDTH*0,FONT_HEIGHT*(10+i))
+			love.graphics.print("Touch "..i.." x:"..math.floor(x).." y:"..math.floor(y),FONT_WIDTH*1,FONT_HEIGHT*(11+i))
     end	
   else
-		love.graphics.print("getTouches == nil",FONT_WIDTH*0,FONT_HEIGHT*10)	
+		love.graphics.print("getTouches == nil",FONT_WIDTH*1,FONT_HEIGHT*11)	
 	end	
 
 	-- draw keyboard data
-  love.graphics.print("--[ Keyboard ]--",FONT_WIDTH*40,FONT_HEIGHT*0)
-  love.graphics.print("#keypressed = "..#keypressed,FONT_WIDTH*40,FONT_HEIGHT*1)
+  love.graphics.print("--[ Keyboard ]--",FONT_WIDTH*64,FONT_HEIGHT*1)
+  love.graphics.print("#keypressed = "..#keypressed,FONT_WIDTH*64,FONT_HEIGHT*2)
 	keypressedHistory = ""
 	for _, value in pairs(keypressed) do
 		keypressedHistory = keypressedHistory .. value .. " "
 	end
-	love.graphics.printf(keypressedHistory, FONT_WIDTH*40, FONT_HEIGHT*2, FONT_WIDTH*40, "left")
+	love.graphics.printf(keypressedHistory, FONT_WIDTH*64, FONT_HEIGHT*3, FONT_WIDTH*64, "left")
 
-	love.graphics.print("desktop size : "..WIDTH_DESKTOP.."x"..HEIGHT_DESKTOP,FONT_WIDTH*0,FONT_HEIGHT*26)
-	love.graphics.print("window size  : "..WIDTH_WINDOW.."x"..HEIGHT_WINDOW,FONT_WIDTH*0,FONT_HEIGHT*27)
+	love.graphics.print("desktop size : "..WIDTH_DESKTOP.."x"..HEIGHT_DESKTOP,FONT_WIDTH*1,FONT_HEIGHT*27)
+	love.graphics.print("window size  : "..WIDTH_WINDOW.."x"..HEIGHT_WINDOW,FONT_WIDTH*1,FONT_HEIGHT*28)
   love.graphics.print("--[ hold anything to quit ]--",FONT_WIDTH*((128-30)/2),FONT_HEIGHT*46)
 	love.graphics.printf(holdToQuit,FONT_WIDTH*0,FONT_HEIGHT*47,FONT_WIDTH*128, "center")
 
@@ -217,6 +222,7 @@ function love.draw()
   -- draw the 1024x768 canvas in the middle
   love.graphics.setColor(1, 1, 1, 1)
 --	love.graphics.print("░",SCREEN_OFFSETX+(FONT_WIDTH*-1),SCREEN_OFFSETY+(FONT_HEIGHT*-1))	
+
   love.graphics.draw(canvas, SCREEN_OFFSETX, SCREEN_OFFSETY)
 
 end
