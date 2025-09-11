@@ -7,6 +7,8 @@
 -- need this for canvas - love.graphics.setBlendMode("alpha", "premultiplied")
 -- crtmonitor background is 1376 x 1032, screen edge offsetX = - 176, Y = -132
 
+local utf8 = require("utf8") -- needed for extended ASCII codes
+
 function love.load()
 
 	-- graphics
@@ -129,6 +131,10 @@ function love.touchpressed( id, x, y, dx, dy, pressure )
 	-- detect touches
 end
 
+function love.touchreleased( id, x, y, dx, dy, pressure )
+	-- detect touch releases
+end
+
 function love.draw()
 	-- set font before draw text
   love.graphics.setFont(monoFont)
@@ -168,6 +174,10 @@ function love.draw()
   love.graphics.print("--[ Touches ]--",FONT_WIDTH*1,FONT_HEIGHT*10)
 	if love.touch.getTouches() ~= nil then
 		love.graphics.print("#getTouches = "..#love.touch.getTouches(),FONT_WIDTH*1,FONT_HEIGHT*11)
+		if #love.touch.getTouches() == 0 then
+			-- reset holdToQuit
+			holdToQuit = 0
+		end
 		local touches = love.touch.getTouches()
     for i, id in ipairs(touches) do
       local x, y = love.touch.getPosition(id)
@@ -188,6 +198,20 @@ function love.draw()
 		keypressedHistory = keypressedHistory .. value .. " "
 	end
 	love.graphics.printf(keypressedHistory, FONT_WIDTH*64, FONT_HEIGHT*3, FONT_WIDTH*64, "left")
+
+	-- draw table of screen printable chars, 1..255
+	local ansiChars = ""
+	for i = 1, 127 do -- run backwards
+		if i ~= 10 then
+			ansiChars = ansiChars .. tostring(string.format("%d",i)..":"..string.format("%s",string.char(i))) .. " "
+		end
+	end
+	-- should store all the chars in a table, maybe called altCode[]
+	local extendedChars = "Ç:128 ü:129 é:130 â:131 ä:132 à:133 å:134 ç:135 ê:136 ë:137 è:138 ï:139 î:140 ì:141 Ä:142 Å:143 É:144 æ:145 Æ:146 ô:147 ö:148 ò:149 û:150 ù:151 ÿ:152 Ö:153 Ü:154 ¢:155 £:156 ¥:157 ₧:158 ƒ:159 á:160 í:161 ó:162 ú:163 ñ:164 Ñ:165 ª:166 º:167 ¿:168 ⌐:169 ¬:170 ½:171 ¼:172 ¡:173 «:174 »:175 ░:176 ▒:177 ▓:178 │:179 ┤:180 ╡:181 ╢:182 ╖:183 ╕:184 ╣:185 ║:186 ╗:187 ╝:188 ╜:189 ╛:190 ┐:191 └:192 ┴:193 ┬:194 ├:195 ─:196 ┼:197 ╞:198 ╟:199 ╚:200 ╔:201 ╩:202 ╦:203 ╠:204 ═:205 ╬:206 ╧:207 ╨:208 ╤:209 ╥:210 ╙:211 ╘:212 ╒:213 ╓:214 ╫:215 ╪:216 ┘:217 ┌:218 █:219 ▄:220 ▌:221 ▐:222 ▀:223 α:224 ß:225 Γ:226 π:227 Σ:228 σ:229 µ:230 τ:231 Φ:232 Θ:233 Ω:234 δ:235 ∞:236 φ:237 ε:238 ∩:239 ≡:240 ±:241 ≥:242 ≤:243 ⌠:244 ⌡:245 ÷:246 ≈:247 °:248 ∙:249 ·:250 √:251 ⁿ:252 ²:253 ■:254  :255"
+	ansiChars = ansiChars..extendedChars
+	love.graphics.printf(ansiChars,FONT_WIDTH*64,FONT_HEIGHT*22,FONT_WIDTH*64,"left")
+
+
 
 	love.graphics.print("desktop size : "..WIDTH_DESKTOP.."x"..HEIGHT_DESKTOP,FONT_WIDTH*1,FONT_HEIGHT*27)
 	love.graphics.print("window size  : "..WIDTH_WINDOW.."x"..HEIGHT_WINDOW,FONT_WIDTH*1,FONT_HEIGHT*28)
@@ -240,6 +264,11 @@ function love.update(dt)
 	-- for holdToQuit feature
 	if love.mouse.isDown( 1, 2, 3) then
 		holdToQuit = holdToQuit + dt
+	end
+	if love.touch.getTouches() ~= nil then
+		if #love.touch.getTouches() >=1 then
+			holdToQuit = holdToQuit + dt
+		end
 	end
 
 	if holdToQuit >= 3 then
