@@ -5,6 +5,7 @@
 -- iPad safe area: 1024 x 768, 128 chars by 48 chars
 -- draw to a 1024 x 768 canvas, then draw the canvas centered on desktop
 -- need this for canvas - love.graphics.setBlendMode("alpha", "premultiplied")
+-- crtmonitor background is 1376 x 1032, screen edge offsetX = - 176, Y = -132
 
 function love.load()
 
@@ -26,6 +27,9 @@ function love.load()
 	else
 		SCREEN_OFFSETY = 0
 	end
+	BGOFFSETX = -176+SCREEN_OFFSETX --{ offset position of CRT Monitor 
+	BGOFFSETY = -132+SCREEN_OFFSETY --{ 
+
 
 	-- flags
 	mouseDetected = false
@@ -45,6 +49,9 @@ function love.load()
 	love.graphics.setFont( monoFont )
 	print(monoFont:getWidth("█"))
 	print(monoFont:getHeight())
+
+--	crtmonitor = love.graphics.newImage("CRT-Monitor.jpg" )
+
 
 	-- joystick code
 	local axisCount = {}
@@ -184,10 +191,27 @@ function love.draw()
 
   -- settings for canvas
   love.graphics.setCanvas() -- switch back to default screen canvas
-  love.graphics.setColor(0,0,0.5,1) -- dark blue
+  love.graphics.setColor(0.929,0.878,0.78,1) -- dark blue
   love.graphics.rectangle("fill",0,0,WIDTH_DESKTOP,HEIGHT_DESKTOP)
+  love.graphics.setColor(1,1,1,1)
+--  love.graphics.draw(crtmonitor, BGOFFSETX, BGOFFSETY)
 --  love.graphics.setBlendMode("alpha", "premultiplied") -- needed for canvas
   love.graphics.setColor(1, 1, 1, 1)
+  
+  -- draw ANSI borders around 1024x768 canvas
+  for i = -2,129 do
+  	love.graphics.setColor(0.568, 0.529, 0.454, 1)
+		love.graphics.print("▓",SCREEN_OFFSETX+(FONT_WIDTH*i),SCREEN_OFFSETY+(FONT_HEIGHT*-1))
+		love.graphics.print("░",SCREEN_OFFSETX+(FONT_WIDTH*i),SCREEN_OFFSETY+(FONT_HEIGHT*48))	
+  end
+	for i =  0,47 do
+	love.graphics.print("▒▒",SCREEN_OFFSETX+(FONT_WIDTH*-2),SCREEN_OFFSETY+(FONT_HEIGHT*i))	
+	love.graphics.print("▒▒",SCREEN_OFFSETX+(FONT_WIDTH*128),SCREEN_OFFSETY+(FONT_HEIGHT*i))	
+	end
+
+  -- draw the 1024x768 canvas in the middle
+  love.graphics.setColor(1, 1, 1, 1)
+--	love.graphics.print("░",SCREEN_OFFSETX+(FONT_WIDTH*-1),SCREEN_OFFSETY+(FONT_HEIGHT*-1))	
   love.graphics.draw(canvas, SCREEN_OFFSETX, SCREEN_OFFSETY)
 
 end
