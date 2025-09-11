@@ -196,17 +196,22 @@ function love.draw()
   love.graphics.setColor(1,1,1,1)
 --  love.graphics.draw(crtmonitor, BGOFFSETX, BGOFFSETY)
 --  love.graphics.setBlendMode("alpha", "premultiplied") -- needed for canvas
-  love.graphics.setColor(1, 1, 1, 1)
   
   -- draw ANSI borders around 1024x768 canvas
+  -- draw extended black border first
+	love.graphics.setColor(0, 0, 0, 1)
+  love.graphics.rectangle("fill",SCREEN_OFFSETX+(FONT_WIDTH*-1),SCREEN_OFFSETY+(FONT_HEIGHT*-1),1024+(FONT_WIDTH*2),768+(FONT_HEIGHT*2))
+
   for i = -2,129 do
   	love.graphics.setColor(0.568, 0.529, 0.454, 1)
-		love.graphics.print("▓",SCREEN_OFFSETX+(FONT_WIDTH*i),SCREEN_OFFSETY+(FONT_HEIGHT*-1))
-		love.graphics.print("░",SCREEN_OFFSETX+(FONT_WIDTH*i),SCREEN_OFFSETY+(FONT_HEIGHT*48))	
+		love.graphics.print("▀",SCREEN_OFFSETX+(FONT_WIDTH*i),SCREEN_OFFSETY+(FONT_HEIGHT*-1))
+  	love.graphics.setColor(0.868, 0.829, 0.754, 1)
+		love.graphics.print("▄",SCREEN_OFFSETX+(FONT_WIDTH*i),SCREEN_OFFSETY+(FONT_HEIGHT*48))	
   end
-	for i =  0,47 do
-	love.graphics.print("▒▒",SCREEN_OFFSETX+(FONT_WIDTH*-2),SCREEN_OFFSETY+(FONT_HEIGHT*i))	
-	love.graphics.print("▒▒",SCREEN_OFFSETX+(FONT_WIDTH*128),SCREEN_OFFSETY+(FONT_HEIGHT*i))	
+	for i =  -1,48 do
+  love.graphics.setColor(0.568, 0.529, 0.454, 1)
+	love.graphics.print("▒ ",SCREEN_OFFSETX+(FONT_WIDTH*-2),SCREEN_OFFSETY+(FONT_HEIGHT*i))	
+	love.graphics.print(" ▒",SCREEN_OFFSETX+(FONT_WIDTH*128),SCREEN_OFFSETY+(FONT_HEIGHT*i))	
 	end
 
   -- draw the 1024x768 canvas in the middle
